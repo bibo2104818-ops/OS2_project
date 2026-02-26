@@ -19,7 +19,7 @@ clear
 #Date and time
 curent_time=$(date +"%Y-%m-%d %H:%M:%S")
 echo -e "${BOLD}${CYAN}Hardware Info Scsan - $curent_time${RESET}"
-echo -e "Hardware infoo Scan - $curent_time" >> "$output_file"
+echo -e "Hardware info Scan - $curent_time" >> "$output_file"
 
 #BANNER
 echo -e "${BOLD}${CYAN}"
