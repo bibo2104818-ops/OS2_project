@@ -51,7 +51,7 @@ echo "" >> "$output_file"
 #Logged In Users
 echo "---- Logged In Users ----" >> "$output_file"
 echo "Current Users : " >> "$output_file"
-$(who) >> "$output_file"
+echo "Logged in Users: $(users)" >> "$output_file"
 echo "" >> "$output_file"
 
 #Environment Information 
