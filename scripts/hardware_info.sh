@@ -63,11 +63,16 @@ spinner() {
 }
 
 #Fake loading
-type_effect "${CYAN}Collecting Hardware Info...${RESET}"
+echo -ne "${CYAN}Collecting Hardware Info..."
+type_effect
+echo -ne "${RESET}"
+#type_effect "${CYAN}Collecting Hardware Info...${RESET}"
 sleep 2 & 
 spinner
 echo ""
-type_effect "${CYAN}Processing Data...${RESET}"
+echo -ne "${CYAN}Processing Data..."
+type_effect
+echo -ne "${RESET}"
 sleep 1
 
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -102,13 +107,10 @@ disk_info=$(df -h / /home 2>/dev/null)
 uptime=$(uptime -p)
 #Network interfaces & IP addresses
 network_interfaces() {
-ip -o -4 addr show | while read -r line 
-do 
-        interface=$(echo "$line" | awk '{print $2}')
-        Ip=$(echo "$line" | awk '{print $4}')
-echo "${WHITE}Interface:${RESET} $interface"
-echo "${WHITE}IPv4:${RESET} $Ip"
-done
+    ip -o -4 addr show | awk '{print $2, $4}' | while read -r interfaces Ip; do
+    print_save "${WHITE}Interface:${RESET} $interface"
+    print_save "${WHITE}IPv4:${RESET} $Ip"
+    done
 }
 
 print_save "${BOLD}${CYAN}Uptime:${RESET} $uptime"
@@ -138,7 +140,6 @@ print_save "${WHITE}Max MHz:${RESET} $max_mhz"
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 print_save "${BOLD}${CYAN}---- Network Interface: ----${RESET}"
 network_interfaces
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
 
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
