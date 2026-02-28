@@ -42,12 +42,12 @@ type_effect() {
     echo ""
 }
 print_save() {
-    
     text="$1"
-    echo -e "$text"
+    echo -e "$text"                      # Always print to terminal with colors
     if [[ "$output_choice" == "y" || "$output_choice" == "Y" ]]; then
-      clean_test=$(echo -e "$text" | sed 's/\x1B\[[0-9;]*[mK]//g')
-      echo "$clean_text" >> "$output_file"  
+        # Remove ANSI escape codes before saving
+        clean_text=$(echo -e "$text" | sed 's/\x1B\[[0-9;]*[mK]//g')
+        echo "$clean_text" >> "$output_file"
     fi
 }
 spinner() {
@@ -61,7 +61,9 @@ spinner() {
     done
     printf "\r${GREEN}[✔] Done!            ${RESET}\n"
 }
-
+echo ""
+read -p "Do you want to save the output to a file? (y/n): " output_choice
+echo ""
 #Fake loading
 echo -ne "${CYAN}Collecting Hardware Info..."
 type_effect
@@ -143,24 +145,36 @@ network_interfaces
 
 
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-print_save "${BOLD}${CYAN}Scan Completed Successfully.${RESET}"
-#PDF export option
-if [[ "$output_choice" == "y" || "$output_choice" == "Y" ]]; then
-    read -p "Do you want to export the report as PDF? (y/n):" pdf_choice
+echo -e "${BOLD}${CYAN}Scan Completed Successfully.${RESET}"
 
-    if [[ "$pdf_choice" == "y" || "$pdf_choice" == "Y" ]]; then
-        if ! command -v pandoc &> /dev/null; then
-            echo -e "${RED}Pandoc is not installed.${RESET}"
-            ecbo "Install it with: sudo apt install pandoc."
-        else
-            pdf_name="hardware_report_$(date +%Y-%m-%d_%H-%M-%S).pdf"
+# Simple PDF conversion - add at the end of your script
+echo ""
+read -p "Convert to PDF? (y/n): " pdf_choice
 
-            pandoc "$output_file" \
-                -v geometry:margin=1in \
-                -v fontsize=11pt \
-                -v documentclass=article \
-                -o "output/temp/$pdf_name"
-            echo -e "${GREEN}PDF generated successfully:${RESET} output/temp/$pdf_name"
-        fi
+if [[ "$pdf_choice" == "y" || "$pdf_choice" == "Y" ]]; then
+    echo -e "${CYAN}Converting to PDF...${RESET}"
+    
+    # Create PDF filename
+    pdf_file="output/hardware_info_$(date +%Y%m%d_%H%M%S).pdf"
+    mkdir -p output
+    
+    # Create a clean temporary file without special characters
+    clean_file="/tmp/hardware_info_clean.txt"
+    
+    # Remove ANSI color codes and special box characters
+    sed 's/\x1B\[[0-9;]*[mK]//g' "$output_file" | \
+    sed 's/━//g' | \
+    sed 's/┃//g' | \
+    sed 's/┣//g' | \
+    sed 's/┻//g' | \
+    sed 's/━//g' > "$clean_file"
+    
+    # Simple conversion with enscript
+    if command -v enscript &> /dev/null; then
+        enscript "$clean_file" -o - | ps2pdf - "$pdf_file"
+        echo -e "${GREEN}PDF saved as: $pdf_file${RESET}"
+        rm "$clean_file"
+    else
+        echo -e "${RED}Please install enscript: sudo apt-get install enscript${RESET}"
     fi
 fi

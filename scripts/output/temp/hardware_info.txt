@@ -1,2 +1,36 @@
-Hardware infoo Scan - 2026-02-26 22:23:56
+Hardware info Scan - 2026-02-28 18:10:55
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ---- CPU Information ----
+Uptime: up 1 hour, 31 minutes
+---- GPU Information ----
+GPU: 00:02.0 VGA compatible controller: Intel Corporation Raptor Lake-P [Iris Xe Graphics] (rev 04)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---- Disk Information ----
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  234G  113G  110G  51% /
+/dev/nvme0n1p2  234G  113G  110G  51% /
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---- RAM Information ----
+Total Memory:30Gi
+Memory Used:4.4Gi
+Free Memory:22Gi
+Swap Total2.0Gi
+Swap Used:0B
+Swap Free:2.0Gi
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---- CPU Information ----
+Model: 13th Gen Intel(R) Core(TM) i7-1365U
+Vendor: GenuineIntel
+Architecture: x86_64
+CPU Family: 6
+Cores per Socket: 10
+Threads per Core: 2
+Total Threads: 12
+Max MHz: 5200.0000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---- Network Interface: ----
+Interface: lo
+IPv4: 127.0.0.1/8
+Interface: wlp0s20f3
+IPv4: 10.156.169.23/24
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
