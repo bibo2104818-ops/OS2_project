@@ -31,8 +31,7 @@ echo "|_| |_|\__,_|_|  \__,_| \\_/\\_/ \__,_|_|  \___| |___|_| |_|_|  \___/ "
 echo -e "${RESET}"
 echo -e "${CYAN}Collecting Hardware information...${RESET}"
 
-#Ask the user if they want to save the output to a file
-read -p "Do you want to save the output to a file? (y/n) " output_choice
+
 # typing effect funtion
 type_effect() {
     text="$1"
@@ -47,7 +46,8 @@ print_save() {
     text="$1"
     echo -e "$text"
     if [[ "$output_choice" == "y" || "$output_choice" == "Y" ]]; then
-       echo -e "$text" >> "$output_file"  
+      clean_test=$(echo -e "$text" | sed 's/\x1B\[[0-9;]*[mK]//g')
+      echo "$clean_text" >> "$output_file"  
     fi
 }
 spinner() {
@@ -108,7 +108,7 @@ uptime=$(uptime -p)
 #Network interfaces & IP addresses
 network_interfaces() {
     ip -o -4 addr show | awk '{print $2, $4}' | while read -r interfaces Ip; do
-    print_save "${WHITE}Interface:${RESET} $interface"
+    print_save "${WHITE}Interface:${RESET} $interfaces"
     print_save "${WHITE}IPv4:${RESET} $Ip"
     done
 }
@@ -144,3 +144,23 @@ network_interfaces
 
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 print_save "${BOLD}${CYAN}Scan Completed Successfully.${RESET}"
+#PDF export option
+if [[ "$output_choice" == "y" || "$output_choice" == "Y" ]]; then
+    read -p "Do you want to export the report as PDF? (y/n):" pdf_choice
+
+    if [[ "$pdf_choice" == "y" || "$pdf_choice" == "Y" ]]; then
+        if ! command -v pandoc &> /dev/null; then
+            echo -e "${RED}Pandoc is not installed.${RESET}"
+            ecbo "Install it with: sudo apt install pandoc."
+        else
+            pdf_name="hardware_report_$(date +%Y-%m-%d_%H-%M-%S).pdf"
+
+            pandoc "$output_file" \
+                -v geometry:margin=1in \
+                -v fontsize=11pt \
+                -v documentclass=article \
+                -o "output/temp/$pdf_name"
+            echo -e "${GREEN}PDF generated successfully:${RESET} output/temp/$pdf_name"
+        fi
+    fi
+fi
