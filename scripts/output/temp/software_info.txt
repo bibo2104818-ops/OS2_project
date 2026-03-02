@@ -1,1 +1,28 @@
-Software info Scan - 2026-02-27 01:56:20
+Software info Scan - 2026-03-02 12:42:44
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- Operating System Information ----[0m
+[97mOS Name:[0m Zorin OS
+[97mOS Version:[0m 18
+[97mDistribution ID:[0m zorin
+[97mKernel Version:[0m 6.17.0-14-generic
+[97mKernel Architecture:[0m x86_64
+[97mHostname:[0m bibo-Latitude-7440
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- System Uptime ----[0m
+[97mUptime:[0m up 4 minutes
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- Package Manager ----[0m
+[97mPackage Manager:[0m dpkg (Debian/Ubuntu)
+[97mTotal Installed Packages:[0m 3278
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- Running Services ----[0m
+[97mActive Services:[0m 45
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- Logged In Users ----[0m
+[97mUsers:[0m bibo bibo
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+[1m[36m---- Environment Information ----[0m
+[97mCurrent User:[0m bibo
+[97mShell:[0m /bin/bash
+[97mHome Directory:[0m /home/bibo
+[32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m

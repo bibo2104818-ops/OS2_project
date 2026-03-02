@@ -139,4 +139,37 @@ print_save "${WHITE}Shell:${RESET} $SHELL"
 print_save "${WHITE}Home Directory:${RESET} $HOME"
 print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-print_save "${BOLD}${GREEN}Software Scan Completed Successfully.${RESET}"
+echo -e "${BOLD}${GREEN}Software Scan Completed Successfully.${RESET}"
+
+
+
+echo ""
+read -p "Convert to PDF? (y/n): " pdf_choice
+
+if [[ "$pdf_choice" == "y" || "$pdf_choice" == "Y" ]]; then
+    echo -e "${CYAN}Converting to PDF...${RESET}"
+    
+    # Create PDF filename
+    pdf_file="output/software_info_$(date +%Y%m%d_%H%M%S).pdf"
+    mkdir -p output
+    
+    # Create a clean temporary file without special characters
+    clean_file="/tmp/software_info_clean.txt"
+    
+    # Remove ANSI color codes and special box characters
+    sed 's/\x1B\[[0-9;]*[mK]//g' "$output_file" | \
+    sed 's/━//g' | \
+    sed 's/┃//g' | \
+    sed 's/┣//g' | \
+    sed 's/┻//g' | \
+    sed 's/━//g' > "$clean_file"
+    
+    # Simple conversion with enscript
+    if command -v enscript &> /dev/null; then
+        enscript "$clean_file" -o - | ps2pdf - "$pdf_file"
+        echo -e "${GREEN}PDF saved as: $pdf_file${RESET}"
+        rm "$clean_file"
+    else
+        echo -e "${RED}Please install enscript: sudo apt-get install enscript${RESET}"
+    fi
+fi

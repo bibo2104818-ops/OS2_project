@@ -1,19 +1,19 @@
-Hardware info Scan - 2026-02-28 18:10:55
+Hardware info Scan - 2026-03-02 11:02:20
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ---- CPU Information ----
-Uptime: up 1 hour, 31 minutes
+Uptime: up 1 hour, 2 minutes
 ---- GPU Information ----
 GPU: 00:02.0 VGA compatible controller: Intel Corporation Raptor Lake-P [Iris Xe Graphics] (rev 04)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ---- Disk Information ----
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/nvme0n1p2  234G  113G  110G  51% /
-/dev/nvme0n1p2  234G  113G  110G  51% /
+/dev/nvme0n1p2  234G  112G  110G  51% /
+/dev/nvme0n1p2  234G  112G  110G  51% /
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ---- RAM Information ----
 Total Memory:30Gi
-Memory Used:4.4Gi
-Free Memory:22Gi
+Memory Used:2.3Gi
+Free Memory:25Gi
 Swap Total2.0Gi
 Swap Used:0B
 Swap Free:2.0Gi
