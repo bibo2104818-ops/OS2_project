@@ -1,4 +1,4 @@
-Software info Scan - 2026-03-02 12:42:44
+Software info Scan - 2026-03-02 12:47:01
 [32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
 [1m[36m---- Operating System Information ----[0m
 [97mOS Name:[0m Zorin OS
@@ -9,7 +9,7 @@ Software info Scan - 2026-03-02 12:42:44
 [97mHostname:[0m bibo-Latitude-7440
 [32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
 [1m[36m---- System Uptime ----[0m
-[97mUptime:[0m up 4 minutes
+[97mUptime:[0m up 8 minutes
 [32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
 [1m[36m---- Package Manager ----[0m
 [97mPackage Manager:[0m dpkg (Debian/Ubuntu)
