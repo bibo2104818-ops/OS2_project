@@ -9,6 +9,27 @@ NC='\033[0m' # No Color
 
 Subject="System Report"
 
+
+
+
+echo -e "${BOLD}${GREEN}"
+echo "  _____                 _ _   _____                 _ _ "
+echo " | ____|_ __ ___   __ _(_) | | ____|_ __ ___   __ _(_) |"
+echo " |  _| | '_ \` _ \ / _\` | | | |  _| | '_ \` _ \ / _\` | | |"
+echo " | |___| | | | | | (_| | | | | |___| | | | | | (_| | | |"
+echo " |_____|_| |_| |_|\__,_|_|_| |_____|_| |_| |_|\__,_|_|_|"
+echo -e "${RESET}"
+
+echo -e "${CYAN}Initializing Email Sender...${RESET}"
+echo -e "${YELLOW}Preparing SMTP connection...${RESET}"
+echo -e "${YELLOW}Loading recipient list...${RESET}"
+
+
+echo -e "${CYAN}----------------------------------------${RESET}"
+echo -e "${GREEN}✔ Ready to send emails${RESET}"
+echo -e "${CYAN}----------------------------------------${RESET}"
+
+
 while true
 do
 
