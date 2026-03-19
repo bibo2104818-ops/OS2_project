@@ -9,17 +9,18 @@ WHITE="\e[97m"
 BOLD="\e[1m"
 RESET="\e[0m"
 
+
 #SETUP
-output_file="output/temp/hardware_info.txt"
-full_report_file="output/full_hardware_info.txt"
-pdf_report_file="output/hardware_report.pdf"
+AUDIT_DIR="/tmp/sys_audit"
+mkdir -p "$AUDIT_DIR"
+
+output_file="$AUDIT_DIR/hardware_short_report.txt"
+full_report_file="$AUDIT_DIR/hardware_full_report.txt"
+pdf_report_file="$AUDIT_DIR/hardware_report.pdf"
+
+> "$full_report_file" # clear the old content
 
 
-mkdir -p output/temp
-mkdir -p output
-> "$full_report_file"  # clear old content
-
-clear
 
 #Date and time
 curent_time=$(date +"%Y-%m-%d %H:%M:%S")
@@ -222,6 +223,8 @@ bios_info(){
 
 }
 
+
+
 print_save "${BOLD}${CYAN}Uptime:${RESET} $uptime"
 print_save "${GREEN}========================================${RESET}"
 print_save "${BOLD}${CYAN}---- GPU Information ----${RESET}"
@@ -258,6 +261,7 @@ print_save "${GREEN}========================================${RESET}"
 print_save "${BOLD}${CYAN}---- BIOS information: ----${RESET}"
 bios_info
 print_save "${GREEN}========================================${RESET}"
+
 echo -e "${BOLD}${CYAN}Scan Completed Successfully.${RESET}"
 
 echo -e "${GREEN}========================================${RESET}"
