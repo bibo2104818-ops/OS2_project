@@ -1,0 +1,2 @@
+9d2f4b9174af103d91d0cf9415e2a4ebce7a3d9332e3f8f645f6f9b04972bbc3  hardware_full_report.txt
+8602ea8b54a65239ca35b85c47ef7a8b14a3b01f06c795d58e9ee3e864803fae  hardware_short_report.txt
