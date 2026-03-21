@@ -1,0 +1,66 @@
+========================================
+Uptime: up 1 hour, 39 minutes
+========================================
+---- GPU Information ----
+GPU: 00:02.0 VGA compatible controller: VMware SVGA II Adapter
+========================================
+---- Disk Information ----
+sda  VBOX HARDDISK 43.1G disk 
+sda1               40.9G part /
+sda2                  1K part 
+sda5                2.2G part [SWAP]
+sr0  VBOX CD-ROM   1024M rom  
+total            50G   15G   34G  31% -
+========================================
+---- RAM Information ----
+Total Memory:5.8Gi
+Memory Used:922Mi
+Free Memory:3.7Gi
+Swap Total2.2Gi
+Swap Used:0B
+Swap Free:2.2Gi
+========================================
+---- CPU Information ----
+Model: 13th Gen Intel(R) Core(TM) i7-1365U
+Vendor: GenuineIntel
+Architecture: x86_64
+CPU Family: 6
+Cores per Socket: 4
+Threads per Core: 1
+Total Threads: 4
+Max MHz: 
+========================================
+---- Network Interface: ----
+Interface Summary:
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UP             192.168.1.17/24 fe80::a00:27ff:fe2e:b33d/64 
+Interface: eth0
+State: up
+MAC Address: 08:00:27:2e:b3:3d
+MTU: 1500
+Speed: 1000Mb/s
+Duplex: Full
+Interface: lo
+State: unknown
+MAC Address: 00:00:00:00:00:00
+MTU: 65536
+Default Gateway: default via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.17 metric 100 
+DNS Servers: nameserver 192.168.1.1
+nameserver fe80::1%eth0
+Active Connections: Total Connections: 3
+========================================
+---- PCI devices: ----
+--+-00.0  Intel Corporation 440FX - 82441FX PMC [Natoma]
++-01.0  Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
++-01.1  Intel Corporation 82371AB/EB/MB PIIX4 IDE
++-02.0  VMware SVGA II Adapter
++-03.0  Intel Corporation 82540EM Gigabit Ethernet Controller
++-04.0  InnoTek Systemberatung GmbH VirtualBox Guest Service
++-05.0  Intel Corporation 82801AA AC'97 Audio Controller
++-06.0  Apple Inc. KeyLargo/Intrepid USB
++-07.0  Intel Corporation 82371AB/EB/MB PIIX4 ACPI
++-0b.0  Intel Corporation 82801FB/FBM/FR/FW/FRW (ICH6 Family) USB2 EHCI Controller
+\-0d.0  Intel Corporation 82801HM/HEM (ICH8M/ICH8M-E) SATA Controller [AHCI mode]
+========================================
+---- BIOS information: ----
+========================================

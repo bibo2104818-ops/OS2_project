@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#COLORS
-#colors
+# COLORS
 RED="\e[31m"
 GREEN="\e[32m"
 YELLOW="\e[33m"
@@ -10,19 +9,24 @@ WHITE="\e[97m"
 BOLD="\e[1m"
 RESET="\e[0m"
 
-#SETUP
-output_file="output/temp/software_info.txt"
-#create the output directory if it does not exist
-mkdir -p output/temp
-> "$output_file"
+# SETUP
+AUDIT_DIR="/tmp/sys_audit"
+mkdir -p "$AUDIT_DIR"
 
-clear
-#DATE AND TIME
-curent_time=$(date +"%Y-%m-%d %H:%M:%S")
-echo -e "${BOLD}${CYAN}Software Info Scan - $curent_time${RESET}"
-echo -e "Software info Scan - $curent_time" >> "$output_file"
+output_file="$AUDIT_DIR/software_short_report.txt"
+full_report_file="$AUDIT_DIR/software_full_report.txt"
+pdf_report_file="$AUDIT_DIR/software_report.pdf"
 
-#BANNER
+> "$full_report_file" # clear the old content
+
+
+# DATE AND TIME
+current_time=$(date +"%Y-%m-%d %H:%M:%S")
+echo -e "${BOLD}${CYAN}Software Info Scan - $current_time${RESET}"
+echo "Software Info Scan - $current_time" >> "$output_file"
+echo "Software Info Scan - $current_time" >> "$full_report_file"
+
+# BANNER
 echo -e "${BOLD}${CYAN}"
 echo " ____         __ _                          "
 echo "/ ___|  ___  / _| |___      ____ _ _ __ ___ "
@@ -36,56 +40,74 @@ echo " | || '_ \\| |_ / _ \\| '__| '_ \` _ \\ / _\` | __| |/ _ \\| '_ \\ "
 echo " | || | | |  _| (_) | |  | | | | | | (_| | |_| | (_) | | | |"
 echo "|___|_| |_|_|  \\___/|_|  |_| |_| |_|\\__,_|\\__|_|\\___/|_| |_|"
 echo -e "${RESET}"
-echo -e "${CYAN}Collecting  Software Information...${RESET}"
-#Ask the user if they want to save the output to a file
-read -p "Do you want to save the output to a file? (y/n) " output_choice
-# typing effect funtion
+echo -e "${CYAN}Collecting Software Information...${RESET}"
+
+read -p "Do you want to save the output to a file? (y/n): " output_choice
+
 type_effect() {
     text="$1"
-    for ((i=0; i < ${#text}; i++)); do
-       echo -ne "${text:$i:1}"
-       sleep 0.02
+    for ((i=0; i<${#text}; i++)); do
+        echo -ne "${text:$i:1}"
+        sleep 0.02
     done
     echo ""
 }
+
 print_save() {
-    
     text="$1"
     echo -e "$text"
+
+    clean_text=$(echo -e "$text" | sed 's/\x1B\[[0-9;]*[mK]//g')
+
+    echo "$clean_text" >> "$full_report_file"
+
     if [[ "$output_choice" == "y" || "$output_choice" == "Y" ]]; then
-       echo -e "$text" >> "$output_file"  
+        echo "$clean_text" >> "$output_file"
     fi
 }
+
 spinner() {
     pid=$!
     spin='-\|/'
     i=0
     while kill -0 $pid 2>/dev/null; do
-    i=$(( (i+1) % 4))
-    printf "\r${YELLOW}[%c] Loading...${RESET}" "${spin:$i:1}"
-    sleep .1
+        i=$(((i+1) % 4))
+        printf "\r${YELLOW}[%c] Loading...${RESET}" "${spin:$i:1}"
+        sleep .1
     done
     printf "\r${GREEN}[✔] Done!            ${RESET}\n"
 }
 
-#Fake loading
+# Fake loading
 echo -ne "${CYAN}Collecting Software Info..."
 type_effect
 echo -ne "${RESET}"
-#type_effect "${CYAN}Collecting Software Info...${RESET}"
-sleep 2 & 
+sleep 2 &
 spinner
+
 echo ""
 echo -ne "${CYAN}Processing Data..."
 type_effect
 echo -ne "${RESET}"
 sleep 1
 
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+# Open ports
+open_ports() {
+    print_save "${BOLD}${CYAN}---- Open Listening Ports ----${RESET}"
 
+    ss -tuln | awk 'NR>1 {
+        split($5,a,":")
+        print a[length(a)]
+    }' | sort -u | while read -r port; do
+        print_save "Port: $port"
+    done
+
+    echo ""
+}
+
+print_save "${GREEN}========================================${RESET}"
 
 print_save "${BOLD}${CYAN}---- Operating System Information ----${RESET}"
-
 if [ -f /etc/os-release ]; then
     source /etc/os-release
     print_save "${WHITE}OS Name:${RESET} $NAME"
@@ -96,16 +118,15 @@ fi
 print_save "${WHITE}Kernel Version:${RESET} $(uname -r)"
 print_save "${WHITE}Kernel Architecture:${RESET} $(uname -m)"
 print_save "${WHITE}Hostname:${RESET} $(hostname)"
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
 
 # System Uptime
 print_save "${BOLD}${CYAN}---- System Uptime ----${RESET}"
 print_save "${WHITE}Uptime:${RESET} $(uptime -p)"
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
 
-# Installed Packages
+# Package Manager
 print_save "${BOLD}${CYAN}---- Package Manager ----${RESET}"
-
 if command -v dpkg >/dev/null 2>&1; then
     print_save "${WHITE}Package Manager:${RESET} dpkg (Debian/Ubuntu)"
     print_save "${WHITE}Total Installed Packages:${RESET} $(dpkg -l | wc -l)"
@@ -115,61 +136,51 @@ elif command -v rpm >/dev/null 2>&1; then
 else
     print_save "${WHITE}Package Manager:${RESET} Unknown"
 fi
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
 
 # Running Services
 print_save "${BOLD}${CYAN}---- Running Services ----${RESET}"
-
 if command -v systemctl >/dev/null 2>&1; then
     print_save "${WHITE}Active Services:${RESET} $(systemctl list-units --type=service --state=running | wc -l)"
 else
     print_save "${WHITE}Service Manager:${RESET} Not detected"
 fi
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
 
 # Logged In Users
 print_save "${BOLD}${CYAN}---- Logged In Users ----${RESET}"
 print_save "${WHITE}Users:${RESET} $(users)"
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
 
 # Environment Info
 print_save "${BOLD}${CYAN}---- Environment Information ----${RESET}"
 print_save "${WHITE}Current User:${RESET} $(whoami)"
 print_save "${WHITE}Shell:${RESET} $SHELL"
 print_save "${WHITE}Home Directory:${RESET} $HOME"
-print_save "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+print_save "${GREEN}========================================${RESET}"
+
+# Open ports section
+open_ports
+print_save "${GREEN}========================================${RESET}"
 
 echo -e "${BOLD}${GREEN}Software Scan Completed Successfully.${RESET}"
 
-
-
+# PDF conversion
 echo ""
-read -p "Convert to PDF? (y/n): " pdf_choice
+read -p "Do you want to generate a PDF report? (y/n): " pdf_choice
 
 if [[ "$pdf_choice" == "y" || "$pdf_choice" == "Y" ]]; then
-    echo -e "${CYAN}Converting to PDF...${RESET}"
-    
-    # Create PDF filename
-    pdf_file="output/software_info_$(date +%Y%m%d_%H%M%S).pdf"
-    mkdir -p output
-    
-    # Create a clean temporary file without special characters
-    clean_file="/tmp/software_info_clean.txt"
-    
-    # Remove ANSI color codes and special box characters
-    sed 's/\x1B\[[0-9;]*[mK]//g' "$output_file" | \
-    sed 's/━//g' | \
-    sed 's/┃//g' | \
-    sed 's/┣//g' | \
-    sed 's/┻//g' | \
-    sed 's/━//g' > "$clean_file"
-    
-    # Simple conversion with enscript
-    if command -v enscript &> /dev/null; then
-        enscript "$clean_file" -o - | ps2pdf - "$pdf_file"
-        echo -e "${GREEN}PDF saved as: $pdf_file${RESET}"
-        rm "$clean_file"
+    echo -e "${CYAN}Generating PDF report...${RESET}"
+
+    if [ -s "$full_report_file" ]; then
+        grep -v "━" "$full_report_file" | a2ps -o - | ps2pdf - "$pdf_report_file"
+
+        if [ -f "$pdf_report_file" ]; then
+            echo -e "${GREEN}✓ PDF saved to: $pdf_report_file${RESET}"
+        else
+            echo -e "${RED}PDF generation failed.${RESET}"
+        fi
     else
-        echo -e "${RED}Please install enscript: sudo apt-get install enscript${RESET}"
+        echo -e "${RED}Report file is empty or missing: $full_report_file${RESET}"
     fi
 fi

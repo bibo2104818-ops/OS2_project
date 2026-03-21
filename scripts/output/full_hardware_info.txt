@@ -1,5 +1,5 @@
 ========================================
-Uptime: up 3 hours, 51 minutes
+Uptime: up 6 minutes
 ========================================
 ---- GPU Information ----
 GPU: 00:02.0 VGA compatible controller: Intel Corporation Raptor Lake-P [Iris Xe Graphics] (rev 04)
@@ -8,21 +8,21 @@ GPU: 00:02.0 VGA compatible controller: Intel Corporation Raptor Lake-P [Iris Xe
 nvme0n1   BC901 NVMe SK hynix 256GB 238.5G disk 
 nvme0n1p1                             512M part /boot/efi
 nvme0n1p2                             238G part /
-total           256G  113G  131G  47% -
+total           256G  114G  130G  47% -
 ========================================
 ---- RAM Information ----
 Total Memory:30Gi
-Memory Used:4.9Gi
-Free Memory:22Gi
+Memory Used:3.3Gi
+Free Memory:25Gi
 Swap Total2.0Gi
 Swap Used:0B
 Swap Free:2.0Gi
 ========================================
 ---- CPU Information ----
-Model: 13th Gen Intel(R) Core(TM) i7-1365U 13th Gen Intel(R) Core(TM) i7-1365U CPU @ 3.6GHz
-Vendor: GenuineIntel Intel(R) Corporation
+Model: 13th Gen Intel(R) Core(TM) i7-1365U
+Vendor: GenuineIntel
 Architecture: x86_64
-CPU Family: 198 6
+CPU Family: 6
 Cores per Socket: 10
 Threads per Core: 2
 Total Threads: 12
@@ -31,7 +31,7 @@ Max MHz: 5200.0000
 ---- Network Interface: ----
 Interface Summary:
 lo               UNKNOWN        127.0.0.1/8 ::1/128 
-wlp0s20f3        UP             10.125.232.23/24 fe80::8edf:6023:745:f8b8/64 
+wlp0s20f3        UP             192.168.1.15/24 fe80::2e87:d97:730f:990d/64 
 Interface: lo
 State: unknown
 MAC Address: 00:00:00:00:00:00
@@ -40,9 +40,9 @@ Interface: wlp0s20f3
 State: up
 MAC Address: 04:e8:b9:86:bf:2d
 MTU: 1500
-Default Gateway: default via 10.125.232.172 dev wlp0s20f3 proto dhcp src 10.125.232.23 metric 600 
+Default Gateway: default via 192.168.1.1 dev wlp0s20f3 proto dhcp src 192.168.1.15 metric 600 
 DNS Servers: nameserver 127.0.0.53
-Active Connections: Total Connections: 13
+Active Connections: Total Connections: 10
 ========================================
 ---- PCI devices: ----
 --+-00.0  Intel Corporation Raptor Lake-P/U 2p+8e cores Host Bridge/DRAM Controller
@@ -72,14 +72,4 @@ Active Connections: Total Connections: 13
 \-1f.5  Intel Corporation Alder Lake-P PCH SPI Controller
 ========================================
 ---- BIOS information: ----
-Vendor: Dell Inc.
-Version: 1.26.1
-Release Date: 09/04/2025
-ROM Size: 32 MB
-Characteristics:
-BIOS Revision: 1.26
-Firmware Revision: 1.22
-Language Description Format: Abbreviated
-Installable Languages: 1
-Currently Installed Language: enUS
 ========================================
