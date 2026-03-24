@@ -1,4 +1,0 @@
-set sendmail="/usr/bin/msmtp"
-set use_from=yes
-set realname="Imad Taibi"
-set from="imadtaibi573@gmail.com"
