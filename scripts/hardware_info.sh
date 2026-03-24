@@ -88,8 +88,7 @@ spinner() {
     done
     printf "\r${GREEN}[✔] Done!            ${RESET}\n"
 }
-echo ""
-read -p "Do you want to save the output to a file? (y/n): " output_choice
+
 echo ""
 #Fake loading
 echo -ne "${CYAN}Collecting Hardware Info..."
@@ -394,13 +393,37 @@ disk_info(){
     fi
 
     # clean aligned output
-    print_save "  \x1b[36mDEVICE          TYPE      SIZE    MOUNTPOINT\x1b[0m"   
-    lsblk -pno NAME,TYPE,SIZE,MOUNTPOINT | grep -v "loop" | while read -r line; do
-        clean_line=$(echo "$line" | awk '{printf "%-15s %-8s %-7s %-s", $1, $2, $3, $4}') 
+    print_save "  \x1b[36mDEVICE          TYPE     SIZE    FSTYPE   MOUNTPOINT\x1b[0m"
+    lsblk -pno NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT | grep -v "loop" | while read -r line; do
+        clean_line=$(echo "$line" | awk '{printf "%-15s %-8s %-7s %-8s %-s", $1, $2, $3, $4, $5}') 
         colored_line=$(echo "$clean_line" | sed "s|^\(/dev/[^ ]*\)|\x1b[36m\1\x1b[0m|")
         print_save "    $colored_line"
     done
     echo "" >> "$FULL_REPORT"
+}
+usb_devices(){
+    print_save "${BOLD}${CYAN}---- USB Devices ----${RESET}"
+    if command -v lsusb >/dev/null 2>&1; then
+        local i=1
+        lsusb | cut -d' ' -f7- | while read -r line; do
+            echo "- Device $i: $line" >> "$SHORT_REPORT"
+            ((i++))
+        done
+    else
+        echo "lsusb not available" >> "$SHORT_REPORT"
+    fi
+
+    if command -v lsusb >/dev/null 2>&1; then
+        local j=1
+        lsusb | while read -r line; do
+            print_save " \x1b[36mDevice $j:\x1b[0m $(echo "$line" | cut -d' ' -f7-)" 
+            ((j++))
+        done
+    else
+        print_save "[Error] lsusb command not founc"
+    fi
+    echo "" >> "$FULL_REPORT"
+
 }
 print_save "${BOLD}${CYAN}Uptime:${RESET} $uptime"
 print_save "${GREEN}========================================${RESET}"
@@ -416,6 +439,8 @@ network_interfaces
 print_save "${GREEN}========================================${RESET}"
 PCI_devices
 print_save "${GREEN}========================================${RESET}"
+usb_devices
+print_save "${GREEN}========================================${RESET}"
 bios_info
 print_save "${GREEN}========================================${RESET}"
 motherboard_info
@@ -430,12 +455,7 @@ echo -e "${GREEN}========================================${RESET}"
 echo ""
 
 # PDF conversion 
-echo -e "${GREEN}========================================${RESET}"
-read -p "generate a pdf report? (y/n): " pdf_choice
-echo -e "${GREEN}========================================${RESET}"
-if [[ "$pdf_choice" =~ ^[yYnN]$ ]]; then
-    HOSTNAME=$(hostname)
-    OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
+OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
 
     if [[ "$pdf_choice" =~ ^[yY]$ ]]; then
         echo -ne "\x1b[36mgenerating pdf... \x1b[0m"
@@ -461,11 +481,11 @@ if [[ "$pdf_choice" =~ ^[yYnN]$ ]]; then
             echo ""
             echo "# 3. technical data"
             echo '```text'
-
+            
             sed 's/\x1b\[[0-9;]*[mk]//g' "$FULL_REPORT" | \
             sed 's/├/+/g; s/└/+/g; s/│/|/g; s/─/-/g; s/═/-/g; s/━/-/g' | \
             sed 's/========================================/----------------------------------------/g'
-
+            
             echo '```'
         } | pandoc -o "$PDF_REPORT" --pdf-engine=xelatex --highlight-style=tango
     fi
