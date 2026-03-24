@@ -457,7 +457,6 @@ echo ""
 # PDF conversion 
 OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
 
-    if [[ "$pdf_choice" =~ ^[yY]$ ]]; then
         echo -ne "\x1b[36mgenerating pdf... \x1b[0m"
         {
             echo "---"
@@ -488,15 +487,10 @@ OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
             
             echo '```'
         } | pandoc -o "$PDF_REPORT" --pdf-engine=xelatex --highlight-style=tango
-    fi
+    
 
     echo -e "\n\x1b[1m\x1b[32m--- audit complete ---\x1b[0m"
     echo -e "\x1b[36mreports are available at:\x1b[0m"
     echo -e "  \x1b[97mshort report:\x1b[0m $(basename "$SHORT_REPORT")"
     echo -e "  \x1b[97mfull report:\x1b[0m  $(basename "$FULL_REPORT")"
-
-    if [[ -f "$PDF_REPORT" && "$pdf_choice" =~ ^[yY]$ ]]; then
-        echo -e "  \x1b[97mpdf report:\x1b[0m   $(basename "$PDF_REPORT")"
-    fi
     echo ""
-fi
