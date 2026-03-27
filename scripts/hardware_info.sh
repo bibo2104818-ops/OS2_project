@@ -33,7 +33,7 @@ touch "$SHORT_REPORT"
 touch "$FULL_REPORT"
 #headers
 echo "NATIONAL SCHOOL OF CYBERSECURITY - SHORT REPORT" > "$SHORT_REPORT"
-cho "Scan Date: $current_time" >> "$SHORT_REPORT"
+echo "Scan Date: $current_time" >> "$SHORT_REPORT"
 echo "----------------------------------------" >> "$SHORT_REPORT"
 echo "NATIONAL SCHOOL OF CYBERSECURITY - FULL TECHNICAL REPORT" > "$FULL_REPORT"
 echo "Hardware info Scan - $current_time" >> "$FULL_REPORT"
@@ -88,8 +88,7 @@ spinner() {
     done
     printf "\r${GREEN}[✔] Done!            ${RESET}\n"
 }
-echo ""
-read -p "Do you want to save the output to a file? (y/n): " output_choice
+
 echo ""
 #Fake loading
 echo -ne "${CYAN}Collecting Hardware Info..."
@@ -103,6 +102,9 @@ echo -ne "${CYAN}Processing Data..."
 type_effect
 echo -ne "${RESET}"
 sleep 1
+
+
+sensor_data=$(sensors)
 
 
 print_save "${GREEN}========================================${RESET}"
@@ -119,6 +121,33 @@ virtualization=$(echo "$cpu_info" | grep 'Virtualization' | awk -F: '{print $2}'
 L1_cache=$(echo "$cpu_info" | grep 'L1d cache' | awk -F: '{print $2}'| xargs)
 L2_cache=$(echo "$cpu_info" | grep 'L2 cache' | awk -F: '{print $2}'| xargs)
 L3_cache=$(echo "$cpu_info" | grep 'L3 cache' | awk -F: '{print $2}'| xargs)
+cpu_temp=$(echo "$sensor_data" | awk '/Package id 0/ {print $4}')
+core_tep=$(echo "$sensor_data" | grep 'Core')
+
+
+get_cpu_usage() {
+    read cpu user nice system idle iowait irq softirq steal guest < /proc/stat
+
+    total1=$((user + nice + system + idle + iowait + irq + softirq + steal))
+    idle1=$((idle + iowait))
+
+    sleep 1
+
+    read cpu user nice system idle iowait irq softirq steal guest < /proc/stat
+
+    total2=$((user + nice + system + idle + iowait + irq + softirq + steal))
+    idle2=$((idle + iowait))
+
+    total_diff=$((total2 - total1))
+    idle_diff=$((idle2 - idle1))
+
+    cpu_usage=$(( (100 * (total_diff - idle_diff)) / total_diff ))
+
+    echo "$cpu_usage"
+}
+
+
+
 
 #gpu:
 gpu=$(lspci | grep -i 'vga\|3d')
@@ -141,6 +170,9 @@ if command -v lsblk >/dev/null 2>&1; then
 
 fi
 disk_usage=$(df -h --total | grep total)
+nvme_temp=$("$sensors" | awk '/Composite/ {print $2}')
+
+
 #uptime:
 uptime=$(uptime -p)
 #Network interfaces & IP addresses
@@ -289,7 +321,22 @@ cpu_info(){
     print_save "  \x1b[36mCPU Family:\x1b[0m $family" 
     print_save "  \x1b[36mCores:\x1b[0m $cores" 
     print_save "  \x1b[36mTotal Threads:\x1b[0m $(nproc)" 
-    print_save "  \x1b[36mMax MHz:\x1b[0m $max_mhz" 
+    print_save "  \x1b[36mMax MHz:\x1b[0m $max_mhz"
+
+   cpu_usage=$(get_cpu_usage)
+   print_save "  \x1b[36mCPU Usage:\x1b[0m ${cpu_usage}%"
+ 
+    cpu_temp=$(echo "$sensor_data" | awk '/Package id 0/ {print $4}')
+    if [ -n "$cpu_temp" ]; then
+        print_save "  \x1b[36mCPU Temp:\x1b[0m $cpu_temp"
+    fi
+
+    core_temps=$(echo "$sensor_data" | awk '/Core [0-9]+/ {printf "%s:%s ", $2, $3}')
+    if [ -n "$core_temps" ]; then
+        print_save "  \x1b[36mCore Temps:\x1b[0m $core_temps"
+    fi
+
+ 
 }
 
 ram_info(){
@@ -339,14 +386,44 @@ disk_info(){
     #-p, --paths (Print full device paths)
     local MAIN_DISK=$(lsblk -dno NAME | grep -Ei "sd|nvme" | head -n1)
     print_save "\x1b[36mPrimary Drive:\x1b[0m /dev/$MAIN_DISK"
+
+    local nvme_temp=$(echo "$sensor_data" | awk '/nvme/ {found=1} found && /Composite/ {print $2; exit}')
+    if [ -n "$nvme_temp" ]; then
+        print_save "\x1b[36mNVMe Temperature:\x1b[0m $nvme_temp"
+    fi
+
     # clean aligned output
-    print_save "  \x1b[36mDEVICE          TYPE      SIZE    MOUNTPOINT\x1b[0m"   
-    lsblk -pno NAME,TYPE,SIZE,MOUNTPOINT | grep -v "loop" | while read -r line; do
-        clean_line=$(echo "$line" | awk '{printf "%-15s %-8s %-7s %-s", $1, $2, $3, $4}') 
+    print_save "  \x1b[36mDEVICE          TYPE     SIZE    FSTYPE   MOUNTPOINT\x1b[0m"
+    lsblk -pno NAME,TYPE,SIZE,FSTYPE,MOUNTPOINT | grep -v "loop" | while read -r line; do
+        clean_line=$(echo "$line" | awk '{printf "%-15s %-8s %-7s %-8s %-s", $1, $2, $3, $4, $5}') 
         colored_line=$(echo "$clean_line" | sed "s|^\(/dev/[^ ]*\)|\x1b[36m\1\x1b[0m|")
         print_save "    $colored_line"
     done
     echo "" >> "$FULL_REPORT"
+}
+usb_devices(){
+    print_save "${BOLD}${CYAN}---- USB Devices ----${RESET}"
+    if command -v lsusb >/dev/null 2>&1; then
+        local i=1
+        lsusb | cut -d' ' -f7- | while read -r line; do
+            echo "- Device $i: $line" >> "$SHORT_REPORT"
+            ((i++))
+        done
+    else
+        echo "lsusb not available" >> "$SHORT_REPORT"
+    fi
+
+    if command -v lsusb >/dev/null 2>&1; then
+        local j=1
+        lsusb | while read -r line; do
+            print_save " \x1b[36mDevice $j:\x1b[0m $(echo "$line" | cut -d' ' -f7-)" 
+            ((j++))
+        done
+    else
+        print_save "[Error] lsusb command not founc"
+    fi
+    echo "" >> "$FULL_REPORT"
+
 }
 print_save "${BOLD}${CYAN}Uptime:${RESET} $uptime"
 print_save "${GREEN}========================================${RESET}"
@@ -362,6 +439,8 @@ network_interfaces
 print_save "${GREEN}========================================${RESET}"
 PCI_devices
 print_save "${GREEN}========================================${RESET}"
+usb_devices
+print_save "${GREEN}========================================${RESET}"
 bios_info
 print_save "${GREEN}========================================${RESET}"
 motherboard_info
@@ -376,14 +455,8 @@ echo -e "${GREEN}========================================${RESET}"
 echo ""
 
 # PDF conversion 
-echo -e "${GREEN}========================================${RESET}"
-read -p "generate a pdf report? (y/n): " pdf_choice
-echo -e "${GREEN}========================================${RESET}"
-if [[ "$pdf_choice" =~ ^[yYnN]$ ]]; then
-    HOSTNAME=$(hostname)
-    OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
+OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
 
-    if [[ "$pdf_choice" =~ ^[yY]$ ]]; then
         echo -ne "\x1b[36mgenerating pdf... \x1b[0m"
         {
             echo "---"
@@ -414,15 +487,10 @@ if [[ "$pdf_choice" =~ ^[yYnN]$ ]]; then
             
             echo '```'
         } | pandoc -o "$PDF_REPORT" --pdf-engine=xelatex --highlight-style=tango
-    fi
+    
 
     echo -e "\n\x1b[1m\x1b[32m--- audit complete ---\x1b[0m"
     echo -e "\x1b[36mreports are available at:\x1b[0m"
     echo -e "  \x1b[97mshort report:\x1b[0m $(basename "$SHORT_REPORT")"
     echo -e "  \x1b[97mfull report:\x1b[0m  $(basename "$FULL_REPORT")"
-
-    if [[ -f "$PDF_REPORT" && "$pdf_choice" =~ ^[yY]$ ]]; then
-        echo -e "  \x1b[97mpdf report:\x1b[0m   $(basename "$PDF_REPORT")"
-    fi
     echo ""
-fi
