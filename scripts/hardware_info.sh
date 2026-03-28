@@ -170,7 +170,8 @@ if command -v lsblk >/dev/null 2>&1; then
 
 fi
 disk_usage=$(df -h --total | grep total)
-nvme_temp=$("$sensors" | awk '/Composite/ {print $2}')
+nvme_temp=$(sensors 2>/dev/null | awk '/Composite/ {print $2}' | tr -d '+°C')
+
 
 
 #uptime:
