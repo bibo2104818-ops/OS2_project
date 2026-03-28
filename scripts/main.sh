@@ -36,6 +36,7 @@ do
     echo -e "${GREEN}6) Setup SSH${NC}"
     echo -e "${GREEN}7) Software Info${NC}"
     echo -e "${GREEN}8) cron job manager{NC}"
+    echo -e "${GREEN}9) comparing two reports${NC}"
     echo -e "${RED}0) Exit${NC}"
 
     echo -e "${CYAN}==============================${NC}"
@@ -74,6 +75,11 @@ do
         8) echo -e "${YELLOW} running Script...${NC}"
            bash cron_script.sh
            ;;
+           
+        9)
+           echo -e "Running Script....${NC}"
+           bash comparing_report.sh
+           ;;   
 
 
         0)
