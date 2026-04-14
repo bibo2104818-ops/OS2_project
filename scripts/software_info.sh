@@ -10,16 +10,13 @@ BOLD="\e[1m"
 RESET="\e[0m"
 
 
-if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}${BOLD}Please run this script as root (use sudo).${RESET}"
-    exit 1
-fi
+
 
 # SETUP
 AUDIT_DIR="/var/log/sys_audit"
 if [ ! -d "$AUDIT_DIR" ]; then
-    sudo mkdir -p "$AUDIT_DIR"
-    sudo chmod 755 "$AUDIT_DIR"
+    mkdir -p "$AUDIT_DIR"
+    chmod 755 "$AUDIT_DIR"
 fi
 SHORT_REPORT="$AUDIT_DIR/software_short_report.txt"
 FULL_REPORT="$AUDIT_DIR/software_full_report.txt"
@@ -107,17 +104,13 @@ active_processes() {
 # Open ports
 open_ports() {
     print_save "${BOLD}${CYAN}---- Open Listening Ports ----${RESET}"
-    port_list=""
-    ss -tuln | awk 'NR>1 {
-        split($5,a,":")
-        print a[length(a)]
-    }' | sort -u | while read -r port; do
+    port_list=$(ss -tuln | awk 'NR>1 {split($5,a,":"); print a[length(a)]}' | sort -u | xargs)
+
+    for port in $port_list; do
         print_save "Port: $port"
-        port_list="$port_list $port"
-
     done
-    echo "Open ports:$port_list" >> "$SHORT_REPORT"
 
+    echo "Open ports: $port_list" >> "$SHORT_REPORT"
     echo ""
 }
 
