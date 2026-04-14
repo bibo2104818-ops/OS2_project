@@ -113,7 +113,7 @@ choose_script() {
     done
 
     check_script "$SELECTED_SCRIPT" || return 1
-    SELECTED_SCRIPT="$(realpath "$SELECTED_SCRIPT")"
+    SELECTED_SCRIPT="$(readlink -f "$SELECTED_SCRIPT")"
     return 0
 }
 

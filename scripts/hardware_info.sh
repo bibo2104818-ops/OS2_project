@@ -17,8 +17,8 @@ fi
 #SETUP
 AUDIT_DIR="/var/log/sys_audit"
 if [ ! -d "$AUDIT_DIR" ]; then
-    sudo mkdir -p "$AUDIT_DIR"
-    sudo chmod 755 "$AUDIT_DIR"
+     mkdir -p "$AUDIT_DIR"
+     chmod 755 "$AUDIT_DIR"
 fi
 
 #Date and time
@@ -104,8 +104,8 @@ echo -ne "${RESET}"
 sleep 1
 
 
-sensor_data=$(sensors)
 
+sensor_data=$(sensors 2>/dev/null)
 
 print_save "${GREEN}========================================${RESET}"
 #CPU information
@@ -122,7 +122,7 @@ L1_cache=$(echo "$cpu_info" | grep 'L1d cache' | awk -F: '{print $2}'| xargs)
 L2_cache=$(echo "$cpu_info" | grep 'L2 cache' | awk -F: '{print $2}'| xargs)
 L3_cache=$(echo "$cpu_info" | grep 'L3 cache' | awk -F: '{print $2}'| xargs)
 cpu_temp=$(echo "$sensor_data" | awk '/Package id 0/ {print $4}')
-core_tep=$(echo "$sensor_data" | grep 'Core')
+core_temp=$(echo "$sensor_data" | grep 'Core')
 
 
 get_cpu_usage() {
@@ -170,9 +170,7 @@ if command -v lsblk >/dev/null 2>&1; then
 
 fi
 disk_usage=$(df -h --total | grep total)
-nvme_temp=$(sensors 2>/dev/null | awk '/Composite/ {print $2}' | tr -d '+°C')
-
-
+nvme_temp=$(echo "$sensor_data" | awk '/Composite/ {print $2}')
 
 #uptime:
 uptime=$(uptime -p)
@@ -240,7 +238,7 @@ PCI_devices(){
         echo "- lspci not available" >> "$SHORT_REPORT"
     fi
     #for the full report
-    if command -v >/dev/null 2>&1; then
+    if command -v lspci >/dev/null 2>&1; then
         lspci -tv | while read -r line; do
             clean_line=$(echo "$line" | sed 's/^\*//')
             [ -n "$clean_line" ] && print_save "$clean_line"
@@ -264,14 +262,14 @@ bios_info(){
         if [ "$EUID" -ne 0 ]; then
             echo "Please run as root: sudo ./hardware_info.sh"
         else
-            sudo dmidecode --type bios 2>/dev/null  | grep -Ei "Vendor|Version|Release Date|ROM Size|Characteristics|BIOS Revision|Firmware Revision|Language Description Format|Installable Languages|Currently Installed Language" | while read -r line; do
+             dmidecode --type bios 2>/dev/null  | grep -Ei "Vendor|Version|Release Date|ROM Size|Characteristics|BIOS Revision|Firmware Revision|Language Description Format|Installable Languages|Currently Installed Language" | while read -r line; do
                 clean_line=$(echo "$line" | xargs)
                 colored_line=$(echo "$clean_line" | sed "s/^\([^:]*:\)/\x1b[36m\1\x1b[0m/")
                 [ -n "$clean_line" ] && print_save "  $colored_line"
             done
         fi
     else
-        print_save "dmicode not available."
+        print_save "dmidecode not available."
     fi
 
     echo "" >> "$FULL_REPORT"
@@ -342,12 +340,12 @@ cpu_info(){
 
 ram_info(){
     #short report
-    print_save "${WHITE}Total Memory: ${RESET}$MEM_TOTAL" >> "$SHORT_REPORT"
-    print_save "${WHITE}Memory Used: ${RESET}$MEM_USED" >> "$SHORT_REPORT"
-    print_save "${WHITE}Free Memory: ${RESET}$MEM_FREE" >> "$SHORT_REPORT"
-    print_save "${WHITE}Swap Total: ${RESET}$SWAP_TOTAL" >> "$SHORT_REPORT"
-    print_save "${WHITE}Swap Used: ${RESET}$SWAP_USED" >> "$SHORT_REPORT"
-    print_save "${WHITE}Swap Free: ${RESET}$SWAP_FREE" >> "$SHORT_REPORT"
+    echo "Total Memory: $MEM_TOTAL" >> "$SHORT_REPORT"
+    echo "Memory Used: $MEM_USED" >> "$SHORT_REPORT"
+    echo "Free Memory: $MEM_FREE" >> "$SHORT_REPORT"
+    echo "Swap Total: $SWAP_TOTAL" >> "$SHORT_REPORT"
+    echo "Swap Used: $SWAP_USED" >> "$SHORT_REPORT"
+    echo "Swap Free: $SWAP_FREE" >> "$SHORT_REPORT"
     #full report
     print_save "${BOLD}${CYAN}---- Physical Memory Modules (RAM) ----${RESET}"
     if [ "$EUID" -ne 0 ]; then
@@ -421,30 +419,61 @@ usb_devices(){
             ((j++))
         done
     else
-        print_save "[Error] lsusb command not founc"
+        print_save "[Error] lsusb command not found"
     fi
     echo "" >> "$FULL_REPORT"
 
 }
+sensor_info(){
+    print_save "---- Sensor Information ----"
+    if command -v sensors >/dev/null 2>&1; then
+        sensors 2>/dev/null | while IFS= read -r line; do
+            if [[ -z "$line" ]]; then
+                echo ""
+            elif [[ "$line" == *":"* ]]; then
+                print_save "${CYAN}${line%%:*}:${RESET}${GREEN}${line#*:}${RESET}"
+             else
+                print_save "${YELLOW}$line${RESET}"
+            fi
+        done
+    else
+        print_save "${RED}[Error] sensors command not available${RESET}"
+    fi
+
+}
+
+
 print_save "${BOLD}${CYAN}Uptime:${RESET} $uptime"
 print_save "${GREEN}========================================${RESET}"
+
 gpu_info
 print_save "${GREEN}========================================${RESET}"
+
 disk_info
 print_save "${GREEN}========================================${RESET}"
+
 ram_info
 print_save "${GREEN}========================================${RESET}"
+
 cpu_info
 print_save "${GREEN}========================================${RESET}"
+
 network_interfaces
 print_save "${GREEN}========================================${RESET}"
+
 PCI_devices
 print_save "${GREEN}========================================${RESET}"
+
 usb_devices
 print_save "${GREEN}========================================${RESET}"
+
 bios_info
 print_save "${GREEN}========================================${RESET}"
+
 motherboard_info
+print_save "${GREEN}========================================${RESET}"
+
+sensor_info
 print_save "${GREEN}========================================${RESET}"
 
 
@@ -454,6 +483,8 @@ echo -e "${GREEN}========================================${RESET}"
 echo -e "${BOLD}${WHITE}     Thank you for using this tool!     ${RESET}"
 echo -e "${GREEN}========================================${RESET}"
 echo ""
+
+
 
 # PDF conversion 
 OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '\"')
