@@ -211,12 +211,6 @@ set from="example@gmail.com"  ---> replace example by your corresponding gmail
 *-----------------------------------------------------------------------------------*
 
 
-set realname="Imad Taibi"
-set from="imadtaibi573@gmail.com"
-
- 
-
-
 
 ## 📦 Installation
 
