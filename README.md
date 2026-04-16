@@ -14,6 +14,7 @@
 - [Technologies Used](#️-technologies-used)
 - [Features](#-features)
 - [Configuration](#️-configuration)
+- [Download & Extract](#-download--extract)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Screenshots](#-screenshots)
@@ -255,8 +256,22 @@ App Passwords only work when **2-Step Verification** is enabled on your Google a
 > - **Do NOT share it** with anyone.
 > - You can revoke it at any time from the same page.
 > - It is used for applications that do not support modern Google login (OAuth).
-
 ---
+## 📦 Download & Extract
+
+Download the latest version from the Releases page:
+
+👉 https://github.com/bibo2104818-ops/OS2_project/releases/latest
+Or download directly:
+
+
+👉 https://github.com/bibo2104818-ops/OS2_project/releases/download/v1.0.0/OS2_project_v1.0.0.zip
+
+Then extract:
+
+```bash
+unzip OS2_project_v1.0.0.zip
+cd OS2_project
 
 ## 📦 Installation
 
