@@ -23,7 +23,7 @@ fi
 
 #Date and time
 current_time=$(date +"%d-%m-%y %H:%M:%S")
-file_ts=$(date +"%d-%m-%y_%H-%M")
+file_ts=$(date +"%d-%m-%y_%H-%M-%S")
 
 SHORT_REPORT="$AUDIT_DIR/short_report_$file_ts.txt"
 FULL_REPORT="$AUDIT_DIR/full_report_$file_ts.txt"

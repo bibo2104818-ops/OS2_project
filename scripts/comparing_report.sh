@@ -39,7 +39,12 @@ do
     if [ ! -f "$rep1" ]; then
         echo -e "${RED}File 1 not found. Searching...${RESET}"
 
-        mapfile -t results1 < <(find . -type f -iname "*$(basename "$rep1")*" 2>/dev/null)
+       mapfile -t results1 < <(
+    {
+        find . -type f -iname "*$(basename "$rep1")*" 2>/dev/null
+        find /var/log/sys_audit -type f -iname "*$(basename "$rep1")*" 2>/dev/null
+    } | sort -u
+)
 
         if [ ${#results1[@]} -eq 0 ]; then
             echo -e "${RED}NO matches found.${RESET}"
@@ -61,7 +66,12 @@ do
     if [ ! -f "$rep2" ]; then 
         echo -e "${RED}File 2 not found. Searching...${RESET}"
 
-        mapfile -t results2 < <(find . -type f -iname "*$(basename "$rep2")*" 2>/dev/null)
+       mapfile -t results2 < <(
+    {
+        find . -type f -iname "*$(basename "$rep2")*" 2>/dev/null
+        find /var/log/sys_audit -type f -iname "*$(basename "$rep2")*" 2>/dev/null
+    } | sort -u
+)
 
         if [ ${#results2[@]} -eq 0 ]; then
             echo -e "${RED}NO matches found.${RESET}"
