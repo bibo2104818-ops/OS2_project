@@ -1,0 +1,16 @@
+# Ignore generated reports
+collected_report/
+scripts/output/
+scripts/collected_report/
+
+# Ignore logs
+*.log
+
+# Ignore generated reports
+*.pdf
+*.txt
+
+# Ignore temporary files
+*.tmp
+*.swp
+!difficulties_faced.txt
