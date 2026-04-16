@@ -272,6 +272,8 @@ Then extract:
 ```bash
 unzip OS2_project_v1.0.0.zip
 cd OS2_project
+```
+---
 
 ## 📦 Installation
 
