@@ -2,8 +2,8 @@
 # monitor_alert.sh — CPU & Memory Alert
 # Usage: bash monitor_alert.sh [alert@email.com]
 
-CPU_THRESHOLD=1
-MEM_THRESHOLD=1
+CPU_THRESHOLD=80
+MEM_THRESHOLD=80
 EMAIL="${1:-}"
 
 RED='\033[0;31m'
