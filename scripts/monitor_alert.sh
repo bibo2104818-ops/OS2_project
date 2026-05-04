@@ -5,7 +5,6 @@
 CPU_THRESHOLD=1
 MEM_THRESHOLD=1
 EMAIL="${1:-}"
-REPORT="/tmp/alert_report_$(date '+%F_%T').txt"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -15,16 +14,7 @@ send_alert() {
     local subject="$1" body="$2"
     echo -e "${RED}⚠ ALERT: $subject${NC}"
     echo "[$(date '+%F %T')] ALERT: $subject" >> ./monitor_alert.log
-
-    if [[ -n "$EMAIL" ]]; then
-        echo -e "$body" > "$REPORT"
-        echo "Please find the alert report attached." | mutt -s "$subject" -a "$REPORT" -- "$EMAIL"
-        if [[ $? -eq 0 ]]; then
-            echo -e "${GREEN}Alert email sent to $EMAIL${NC}"
-        else
-            echo -e "${RED}Failed to send email!${NC}"
-        fi
-    fi
+    [[ -n "$EMAIL" ]] && echo "$body" | mutt -s "$subject" -- "$EMAIL"
 }
 
 # CPU check
