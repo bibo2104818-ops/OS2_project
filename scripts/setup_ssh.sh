@@ -16,7 +16,7 @@ echo "Note: You will be asked for $REMOTE_USER's password one final time."
 ssh-copy-id "$REMOTE_USER@$REMOTE_IP"
 #testing the automation process
 echo "Testing the passwordless connection..."
-ssh -o BatchMode=yes "$REMOTE_USER@$REMOTE_IP" "echo 'Success! Passwordless SSH is working."
+ssh -o BatchMode=yes "$REMOTE_USER@$REMOTE_IP" "echo 'Success! Passwordless SSH is working.'"
 if [ $? -eq 0 ]; then
     echo "Setup complete! You can now use remote_access.sh for this IP address..."
 else
